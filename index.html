@@ -44,7 +44,10 @@
 
 <script>
 let process_id = null;
-
+body: JSON.stringify({
+  phone: phone,
+  birth_year: "1995"
+})
 async function startPayment() {
   const phone = document.getElementById("phone").value;
 
