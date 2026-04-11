@@ -2,28 +2,32 @@ export default async function handler(req, res) {
   try {
     const { process_id, code } = req.body;
 
-    const response = await fetch("https://api.plutu.ly/api/v1/payment/confirm", {
+    const response = await fetch("https://api.plutus.ly/api/v1/transaction/sadadapi/confirm", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "api_key": process.env.API_KEY,
-        "access_token": process.env.ACCESS_TOKEN
+        "X-API-KEY": process.env.API_KEY,
+        "Authorization": `Bearer ${process.env.ACCESS_TOKEN}`
       },
-      body: JSON.stringify({
-        process_id,
-        code
+      body: new URLSearchParams({
+        process_id: process_id,
+        code: code,
+        amount: "10",
+        invoice_no: "INV-" + Date.now(),
+        customer_ip: "127.0.0.1"
       })
     });
 
     const data = await response.json();
 
-    if (data.status === "success") {
-      return res.json({ status: "success", message: "تم الدفع بنجاح" });
+    console.log("CONFIRM:", data);
+
+    if (data.status === 200) {
+      return res.json({ message: "✅ تم الدفع بنجاح" });
     }
 
-    res.json({ status: "fail", message: "فشل الدفع", data });
+    res.json({ message: "❌ فشل الدفع", data });
 
   } catch (err) {
-    res.status(500).json({ message: "خطأ في السيرفر" });
+    res.status(500).json({ message: "Server error" });
   }
 }
