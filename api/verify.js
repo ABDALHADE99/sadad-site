@@ -2,6 +2,10 @@ export default async function handler(req, res) {
   try {
     const { phone } = req.body;
 
+    if (!phone) {
+      return res.status(400).json({ message: "رقم الهاتف مطلوب" });
+    }
+
     const response = await fetch("https://api.plutu.ly/api/v1/payment/verify", {
       method: "POST",
       headers: {
@@ -11,21 +15,21 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         phone: phone,
-        amount: 10, // غيرها حسب السعر
+        amount: 10,
         currency: "LYD",
-        callback_url: "https://project-414yp-oblqux354-abdalhadysalem739-2347s-projects.vercel.app/api/callback"
+        service_id: 1,
+        callback_url: "https://project-414yp.vercel.app/api/callback"
       })
     });
 
     const data = await response.json();
 
-    if (!data.process_id) {
-      return res.status(400).json({ message: "فشل إرسال OTP", data });
-    }
+    console.log("VERIFY RESPONSE:", data); // 🔥 مهم جدًا
 
-    res.json(data);
+    res.status(response.status).json(data);
 
   } catch (err) {
+    console.error("VERIFY ERROR:", err);
     res.status(500).json({ message: "خطأ في السيرفر" });
   }
 }
