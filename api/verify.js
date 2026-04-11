@@ -13,7 +13,7 @@ export default async function handler(req, res) {
         phone: phone,
         amount: 10, // غيرها حسب السعر
         currency: "LYD",
-        callback_url: "https://project-414yp.vercel.app/"
+        callback_url: "https://YOUR_DOMAIN.vercel.app/api/callback"
       })
     });
 
