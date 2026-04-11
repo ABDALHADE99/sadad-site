@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    console.log("✅ VERIFY RESPONSE:", data);
+    console.log("VERIFY:", data);
 
     res.status(response.status).json(data);
 
