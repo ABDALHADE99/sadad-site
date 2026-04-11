@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>الدفع عبر Sadad</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #f4f4f4;
+    }
+    .box {
+      background: white;
+      padding: 20px;
+      margin: 100px auto;
+      width: 300px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    input, button {
+      width: 90%;
+      padding: 10px;
+      margin: 5px;
+    }
+    button {
+      background: #0070f3;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2> الدفع عبر Sadad</h2>
+
+  <input type="text" id="phone" placeholder="رقم الهاتف" />
+  <button onclick="startPayment()">إرسال OTP</button>
+
+  <input type="text" id="otp" placeholder="رمز OTP" />
+  <button onclick="confirmPayment()">تأكيد الدفع</button>
+</div>
+
+<script>
+let process_id = null;
+
+async function startPayment() {
+  const phone = document.getElementById("phone").value;
+
+  const res = await fetch("/api/verify", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ phone })
+  });
+
+  const data = await res.json();
+  process_id = data.process_id;
+
+  alert("تم إرسال الكود");
+}
+
+async function confirmPayment() {
+  const otp = document.getElementById("otp").value;
+
+  const res = await fetch("/api/confirm", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ process_id, code: otp })
+  });
+
+  const data = await res.json();
+
+  if (data.status === "success") {
+    alert("✅ تم الدفع بنجاح");
+  } else {
+    alert("❌ فشل الدفع");
+  }
+}
+</script>
+
+</body>
+</html>
