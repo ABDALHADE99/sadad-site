@@ -4,9 +4,9 @@ export default async function handler(req, res) {
       return res.status(405).json({ message: "Method Not Allowed" });
     }
 
-    const { phone, birth_year } = req.body;
+    const { phone, amount } = req.body;
 
-    const response = await fetch("https://api.plutus.ly/api/v1/transaction/sadadapi/verify", {
+    const response = await fetch("https://api.plutus.ly/api/v1/transaction/edfali/verify", {
       method: "POST",
       headers: {
         "X-API-KEY": process.env.API_KEY,
@@ -14,9 +14,9 @@ export default async function handler(req, res) {
       },
       body: new URLSearchParams({
         mobile_number: phone,
-        birth_year: birth_year,
-        amount: "10"
+        amount: amount || "10"
       })
+      
     });
 
     const data = await response.json();

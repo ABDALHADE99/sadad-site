@@ -1,8 +1,8 @@
 export default async function handler(req, res) {
   try {
-    const { process_id, code } = req.body;
+    const { process_id, code, amount } = req.body;
 
-    const response = await fetch("https://api.plutus.ly/api/v1/transaction/sadadapi/confirm", {
+    const response = await fetch("https://api.plutus.ly/api/v1/transaction/edfali/confirm", {
       method: "POST",
       headers: {
         "X-API-KEY": process.env.API_KEY,
@@ -11,7 +11,7 @@ export default async function handler(req, res) {
       body: new URLSearchParams({
         process_id: process_id,
         code: code,
-        amount: "10",
+        amount: amount || "10",
         invoice_no: "INV-" + Date.now(),
         customer_ip: "127.0.0.1"
       })
@@ -22,12 +22,13 @@ export default async function handler(req, res) {
     console.log("CONFIRM:", data);
 
     if (data.status === 200) {
-      return res.json({ message: "✅ تم الدفع بنجاح" });
+      return res.json({ message: "✅ تم الدفع بنجاح", data });
     }
 
-    res.json({ message: "❌ فشل الدفع", data });
+    res.status(response.status || 400).json({ message: "❌ فشل الدفع", data });
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 }
