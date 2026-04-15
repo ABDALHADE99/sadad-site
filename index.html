@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>مدفوعات آمنة | Adfali Pay</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Tahoma', system-ui, 'Cairo', 'Tajawal', sans-serif;
+      background: linear-gradient(135deg, #f5f7fc 0%, #e9eef5 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    /* بطاقة الدفع الرئيسية */
+    .payment-card {
+      max-width: 520px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 2rem;
+      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.02);
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .payment-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 25px 40px -14px rgba(0, 0, 0, 0.15);
+    }
+
+    /* الهيدر */
+    .card-header {
+      background: #1a2a3f;
+      padding: 1.8rem 2rem;
+      text-align: center;
+      color: white;
+    }
+
+    .card-header h2 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      letter-spacing: -0.3px;
+    }
+
+    .card-header p {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-top: 0.5rem;
+    }
+
+    /* المحتوى */
+    .card-body {
+      padding: 2rem 1.8rem 2rem 1.8rem;
+    }
+
+    /* مجموعة الحقول */
+    .input-group {
+      margin-bottom: 1.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .input-group label {
+      font-weight: 600;
+      color: #1e2f3e;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .input-group label i {
+      font-style: normal;
+      font-weight: normal;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 0.9rem 1.2rem;
+      font-size: 1rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 1.2rem;
+      background-color: #fefefe;
+      transition: all 0.2s;
+      font-family: inherit;
+      outline: none;
+      color: #0f172a;
+    }
+
+    .input-field:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+      background-color: #ffffff;
+    }
+
+    .input-field::placeholder {
+      color: #94a3b8;
+      font-weight: 400;
+    }
+
+    /* أزرار */
+    .btn {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 1.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      background: #f1f5f9;
+      color: #1e293b;
+    }
+
+    .btn-primary {
+      background: linear-gradient(105deg, #0f2b3d, #1e4a6e);
+      color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(105deg, #123a52, #235f86);
+      transform: scale(0.98);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-secondary {
+      background: #f8fafc;
+      border: 1.5px solid #cbd5e1;
+      color: #1e293b;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* قسم OTP */
+    .otp-section {
+      margin-top: 1.8rem;
+      padding-top: 1rem;
+      border-top: 1px dashed #e2e8f0;
+    }
+
+    .otp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.7rem;
+    }
+
+    .resend-link {
+      background: none;
+      border: none;
+      color: #3b82f6;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0.2rem 0.5rem;
+      border-radius: 1rem;
+      transition: background 0.1s;
+    }
+
+    .resend-link:hover {
+      background: #eef2ff;
+    }
+
+    /* رسائل النظام */
+    .message-area {
+      margin: 1rem 0 0.5rem 0;
+      padding: 0.75rem 1rem;
+      border-radius: 1rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #f8fafc;
+      color: #334155;
+      transition: all 0.2s;
+    }
+
+    .message-area.error {
+      background: #fee2e2;
+      color: #b91c1c;
+      border-right: 4px solid #ef4444;
+    }
+
+    .message-area.success {
+      background: #e0f2fe;
+      color: #0c4e6e;
+      border-right: 4px solid #0ea5e9;
+    }
+
+    .message-area.loading {
+      background: #eef2ff;
+      color: #1e40af;
+    }
+
+    /* سبينر صغير */
+    .spinner {
+      display: inline-block;
+      width: 1rem;
+      height: 1rem;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.6s linear infinite;
+    }
+
+    .spinner-dark {
+      border: 2px solid #cbd5e1;
+      border-top-color: #1e293b;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* تذييل */
+    .card-footer {
+      background: #f9fbfd;
+      padding: 1rem 1.8rem;
+      text-align: center;
+      font-size: 0.7rem;
+      color: #5b6e8c;
+      border-top: 1px solid #eef2f6;
+    }
+
+    /* responsiveness */
+    @media (max-width: 480px) {
+      .card-body {
+        padding: 1.5rem;
+      }
+      .card-header h2 {
+        font-size: 1.5rem;
+      }
+      .btn {
+        padding: 0.75rem 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="payment-card">
+  <div class="card-header">
+    <h2>
+      <span></span> Adfali Pay
+    </h2>
+    <p>دفع آمن وسريع عبر هاتفك</p>
+  </div>
+
+  <div class="card-body">
+    <!-- حقل رقم الهاتف -->
+    <div class="input-group">
+      <label><span></span> رقم الجوال</label>
+      <input type="tel" id="phone" class="input-field" placeholder="09xxxxxxxx" maxlength="10" inputmode="numeric">
+      <small style="color:#64748b; font-size:0.7rem;">مثال: 0912345678</small>
+    </div>
+
+    <!-- حقل المبلغ -->
+    <div class="input-group">
+      <label><span></span> المبلغ (LYD)</label>
+      <input type="number" id="amount" class="input-field" placeholder="مثال: 50.0" step="0.1" min="0.1">
+    </div>
+
+    <!-- زر إرسال OTP -->
+    <button id="sendOtpBtn" class="btn btn-primary">
+      <span>✉️</span> إرسال رمز التحقق (OTP)
+    </button>
+
+    <!-- قسم OTP (يظهر بعد نجاح الإرسال) -->
+    <div id="otpSection" class="otp-section" style="display: none;">
+      <div class="otp-header">
+        <label style="font-weight:600;">🔐 رمز التحقق</label>
+        <button id="resendOtpBtn" class="resend-link">↻ إعادة إرسال</button>
+      </div>
+      <input type="text" id="otp" class="input-field" placeholder="أدخل الرمز المكون من 6 أرقام" maxlength="8" inputmode="numeric">
+      <button id="confirmPayBtn" class="btn btn-secondary" style="margin-top: 1rem;">
+        <span>✅</span> تأكيد الدفع
+      </button>
+    </div>
+
+    <!-- منطقة عرض الرسائل (بديل الـ alert) -->
+    <div id="globalMessage" class="message-area">
+      <span>ℹ️</span> أدخل البيانات ثم أرسل رمز التحقق
+    </div>
+  </div>
+
+  <div class="card-footer">
+    🔒 مدعوم من Adfali | بيئة دفع مشفرة
+  </div>
+</div>
+
+<script>
+  // المتغيرات العامة
+  let processId = null;
+  let currentAmount = null;
+  let lastPhone = null;
+  let isSendingOtp = false;
+  let isConfirming = false;
+
+  // عناصر DOM
+  const phoneInput = document.getElementById('phone');
+  const amountInput = document.getElementById('amount');
+  const sendOtpBtn = document.getElementById('sendOtpBtn');
+  const otpSection = document.getElementById('otpSection');
+  const otpInput = document.getElementById('otp');
+  const confirmPayBtn = document.getElementById('confirmPayBtn');
+  const resendOtpBtn = document.getElementById('resendOtpBtn');
+  const globalMessageDiv = document.getElementById('globalMessage');
+
+  // --- دوال مساعدة للرسائل ---
+  function showMessage(text, type = 'info') {
+    // type: 'info', 'success', 'error', 'loading'
+    let icon = '📢';
+    if (type === 'success') icon = '✅';
+    else if (type === 'error') icon = '❌';
+    else if (type === 'loading') icon = '⏳';
+    else icon = 'ℹ️';
+
+    globalMessageDiv.innerHTML = `<span>${icon}</span> ${text}`;
+    globalMessageDiv.className = 'message-area';
+    if (type === 'error') globalMessageDiv.classList.add('error');
+    else if (type === 'success') globalMessageDiv.classList.add('success');
+    else if (type === 'loading') globalMessageDiv.classList.add('loading');
+    else globalMessageDiv.classList.remove('error', 'success', 'loading');
+  }
+
+  function clearMessage() {
+    globalMessageDiv.innerHTML = `<span>✨</span> جاهز للدفع`;
+    globalMessageDiv.className = 'message-area';
+  }
+
+  // التحقق من صحة رقم الهاتف الليبي (09 متبوع بـ 8 أرقام إجمالي 10)
+  function isValidPhone(phone) {
+    const phoneRegex = /^09\d{8}$/;  // 09 + 8 أرقام = 10 خانات
+    return phoneRegex.test(phone);
+  }
+
+  function isValidAmount(amount) {
+    if (amount === undefined || amount === null || amount === '') return false;
+    const num = parseFloat(amount);
+    return !isNaN(num) && num > 0 && num <= 50000; // حد أقصى معقول 50000
+  }
+
+  // إعادة تعيين حالة OTP (في حال فشل أو إعادة إرسال)
+  function resetOtpState() {
+    otpInput.value = '';
+    if (confirmPayBtn) confirmPayBtn.disabled = false;
+  }
+
+  // إظهار/إخفاء الـ OTP section مع إعادة تعيين
+  function showOtpSection(show) {
+    otpSection.style.display = show ? 'block' : 'none';
+    if (!show) {
+      otpInput.value = '';
+      processId = null;
+      currentAmount = null;
+    } else {
+      resetOtpState();
+    }
+  }
+
+  // دالة إرسال OTP (تستخدم في الإرسال الأولي وإعادة الإرسال)
+  async function sendOtp(isResend = false) {
+    // منع التكرار
+    if (isSendingOtp) return;
+
+    // التحقق من المدخلات (ما عدا في حالة إعادة الإرسال نستخدم البيانات المخزنة)
+    let phone = phoneInput.value.trim();
+    let amountRaw = amountInput.value.trim();
+
+    if (!isResend) {
+      if (!isValidPhone(phone)) {
+        showMessage('رقم الهاتف غير صحيح. يجب أن يبدأ بـ 09 ويتكون من 10 أرقام.', 'error');
+        phoneInput.focus();
+        return;
+      }
+      if (!isValidAmount(amountRaw)) {
+        showMessage('المبلغ غير صالح. أدخل مبلغاً أكبر من 0 وأقل من 50000 دينار.', 'error');
+        amountInput.focus();
+        return;
+      }
+    } else {
+      // إعادة الإرسال تستخدم آخر رقم وآخر مبلغ صحيح تم تخزينهما
+      if (!lastPhone || !currentAmount) {
+        showMessage('لا توجد جلسة سابقة، يرجى إرسال OTP أولاً.', 'error');
+        return;
+      }
+      phone = lastPhone;
+      amountRaw = currentAmount;
+    }
+
+    const amountNum = parseFloat(amountRaw).toFixed(2);
+
+    // تعطيل الأزرار وتغيير حالة التحميل
+    isSendingOtp = true;
+    sendOtpBtn.disabled = true;
+    if (isResend) resendOtpBtn.disabled = true;
+    else sendOtpBtn.innerHTML = '<span class="spinner"></span> جاري الإرسال...';
+
+    showMessage(isResend ? 'جاري إعادة إرسال الرمز...' : 'جاري إرسال رمز التحقق إلى هاتفك...', 'loading');
+
+    try {
+      const response = await fetch('/api/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: phone,
+          amount: amountNum
+        })
+      });
+
+      const data = await response.json();
+      console.log('[verify]', data);
+
+      if (data && (data.status === 200 || data.status === 200) && data.result && data.result.process_id) {
+        // نجاح إرسال OTP
+        processId = data.result.process_id;
+        currentAmount = amountNum;
+        lastPhone = phone;
+
+        showMessage(`✅ تم إرسال رمز التحقق إلى ${phone}. أدخل الرمز لإتمام الدفع.`, 'success');
+        // إظهار قسم OTP
+        showOtpSection(true);
+        otpInput.focus();
+        // في حالة الإعادة، مسح حقل OTP القديم
+        resetOtpState();
+      } else {
+        // فشل من API
+        let errorMsg = data?.error?.message || data?.message || 'فشل إرسال الرمز، تحقق من الرقم والمبلغ.';
+        showMessage(`⚠️ ${errorMsg}`, 'error');
+        if (!isResend) showOtpSection(false);
+        else {
+          // لو فشلت إعادة الإرسال، نعطي خيار إعادة المحاولة
+          processId = null;
+        }
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      showMessage('خطأ في الاتصال بالخادم. تأكد من اتصال الإنترنت.', 'error');
+      if (!isResend) showOtpSection(false);
+    } finally {
+      isSendingOtp = false;
+      sendOtpBtn.disabled = false;
+      sendOtpBtn.innerHTML = '<span>✉️</span> إرسال رمز التحقق (OTP)';
+      if (resendOtpBtn) resendOtpBtn.disabled = false;
+      // استعادة الرسالة العادية إذا لم تكن خطأ
+      if (!globalMessageDiv.classList.contains('error') && !globalMessageDiv.classList.contains('success')) {
+        setTimeout(() => {
+          if (globalMessageDiv.innerText.includes('جاري')) clearMessage();
+        }, 1500);
+      }
+    }
+  }
+
+  // تأكيد الدفع باستخدام OTP
+  async function confirmPayment() {
+    if (isConfirming) return;
+    const otpCode = otpInput.value.trim();
+    if (!otpCode) {
+      showMessage('الرجاء إدخال رمز OTP المرسل إلى جوالك.', 'error');
+      otpInput.focus();
+      return;
+    }
+    if (!processId) {
+      showMessage('انتهت صلاحية الجلسة أو لم يتم إرسال رمز. يرجى إعادة إرسال الرمز.', 'error');
+      return;
+    }
+    if (!currentAmount) {
+      showMessage('بيانات الدفع غير مكتملة، يرجى إعادة إرسال الرمز.', 'error');
+      return;
+    }
+
+    isConfirming = true;
+    confirmPayBtn.disabled = true;
+    confirmPayBtn.innerHTML = '<span class="spinner spinner-dark"></span> جاري المعالجة...';
+
+    showMessage('جاري التحقق من الرمز وإتمام الدفع...', 'loading');
+
+    try {
+      const response = await fetch('/api/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          process_id: processId,
+          code: otpCode,
+          amount: currentAmount
+        })
+      });
+
+      const data = await response.json();
+      console.log('[confirm]', data);
+
+      if (data && data.status === 200) {
+        showMessage(`🎉 ${data.message || 'تم الدفع بنجاح! شكراً لثقتك.'}`, 'success');
+        // إعادة تعيين النموذج بعد نجاح الدفع
+        phoneInput.value = '';
+        amountInput.value = '';
+        otpInput.value = '';
+        showOtpSection(false);
+        processId = null;
+        currentAmount = null;
+        lastPhone = null;
+        // إعادة ضبط الحالة
+        sendOtpBtn.disabled = false;
+        setTimeout(() => {
+          clearMessage();
+        }, 3000);
+      } else {
+        let failMsg = data?.error?.message || data?.message || 'فشل تأكيد الدفع، تحقق من الرمز أو حاول مرة أخرى.';
+        showMessage(`❌ ${failMsg}`, 'error');
+        // إذا كان الرمز خاطئاً، نسمح للمستخدم بإعادة المحاولة دون مسح processId
+        if (data?.error?.code === 'INVALID_OTP') {
+          otpInput.value = '';
+          otpInput.focus();
+        } else {
+          // خطأ جسيم: ربما الجلسة انتهت -> نغلق قسم OTP
+          processId = null;
+          showOtpSection(false);
+        }
+      }
+    } catch (error) {
+      console.error('Confirm error:', error);
+      showMessage('فشل الاتصال أثناء تأكيد الدفع. تأكد من الشبكة.', 'error');
+    } finally {
+      isConfirming = false;
+      confirmPayBtn.disabled = false;
+      confirmPayBtn.innerHTML = '<span>✅</span> تأكيد الدفع';
+    }
+  }
+
+  // ربط الأحداث
+  sendOtpBtn.addEventListener('click', () => sendOtp(false));
+  confirmPayBtn.addEventListener('click', confirmPayment);
+  resendOtpBtn.addEventListener('click', async () => {
+    if (!processId && !lastPhone) {
+      showMessage('لا توجد جلسة نشطة. أرسل رمزاً أولاً.', 'error');
+      return;
+    }
+    // إعادة إرسال OTP بدون تغيير المبلغ والرقم
+    await sendOtp(true);
+  });
+
+  // إضافة تحسينات: مسح رسالة عند الكتابة في الحقول
+  phoneInput.addEventListener('input', () => {
+    if (globalMessageDiv.classList.contains('error')) clearMessage();
+  });
+  amountInput.addEventListener('input', () => {
+    if (globalMessageDiv.classList.contains('error')) clearMessage();
+  });
+  otpInput.addEventListener('input', () => {
+    if (globalMessageDiv.classList.contains('error')) clearMessage();
+  });
+
+  // منع إرسال النموذج بالضغط على Enter (لتحسين التجربة)
+  const inputs = [phoneInput, amountInput, otpInput];
+  inputs.forEach(inp => {
+    inp.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (inp === phoneInput || inp === amountInput) {
+          sendOtp(false);
+        } else if (inp === otpInput && otpSection.style.display === 'block') {
+          confirmPayment();
+        }
+      }
+    });
+  });
+
+  // التحقق من صحة رقم الهاتف أثناء الكتابة (تنسيق بسيط)
+  phoneInput.addEventListener('blur', () => {
+    let val = phoneInput.value.trim();
+    if (val && !isValidPhone(val) && val.length > 0) {
+      showMessage('رقم الهاتف يجب أن يبدأ بـ 09 ويتكون من 10 أرقام.', 'error');
+    } else {
+      if (globalMessageDiv.innerText.includes('رقم الهاتف')) clearMessage();
+    }
+  });
+
+  // عند تحميل الصفحة، نضع بعض الإرشادات
+  clearMessage();
+</script>
+</body>
+</html>
